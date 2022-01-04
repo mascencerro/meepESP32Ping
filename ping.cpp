@@ -107,6 +107,10 @@ static float var_time = 0;
 #define PING_DEFAULT_TIMEOUT   1
 #endif
 
+#ifndef TIME_UNIT_MILLIS
+#define TIME_UNIT_SECONDS
+#endif
+
 /*
 * Helper functions
 *
@@ -256,10 +260,7 @@ void ping(const char *name, int count, int interval, int size, int timeout) {
 }
 
 bool ping_start(struct ping_option *ping_o) {
-
-
     return ping_start(ping_o->ip,ping_o->count,0,0,0,ping_o);
-
 }
 bool ping_start(IPAddress adr, int count=0, int interval=0, int size=0, int timeout=0, struct ping_option *ping_o) {
 //	driver_error_t *error;
@@ -289,7 +290,6 @@ bool ping_start(IPAddress adr, int count=0, int interval=0, int size=0, int time
         return false;
     }
 
-
     address.sin_addr.s_addr = adr;
     ping_target.addr = address.sin_addr.s_addr;
 
@@ -297,9 +297,13 @@ bool ping_start(IPAddress adr, int count=0, int interval=0, int size=0, int time
     struct timeval tout;
 
     // Timeout
+#ifdef TIME_UNIT_SECONDS
     tout.tv_sec = timeout;
     tout.tv_usec = 0;
-
+#elifdef TIME_UNIT_MILLIS
+    tout.tv_sec = 0;
+    tout.tv_usec = timeout
+#endif
     if (setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &tout, sizeof(tout)) < 0) {
         closesocket(s);
         // TODO: error
@@ -331,7 +335,11 @@ bool ping_start(IPAddress adr, int count=0, int interval=0, int size=0, int time
             ping_recv(s);
         }
         if(ping_seq_num < count){
-            delay( interval*1000L);
+#ifdef TIME_UNIT_SECONDS
+            delay(interval*1000L);
+#elifdef TIME_UNIT_MILLIS
+            delay(interval);
+#endif
         }
     }
 

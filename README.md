@@ -1,7 +1,7 @@
 # ESP32Ping
 Let the ESP32Ping ping a remote machine.
 
-#Note that this is a port from https://github.com/dancol90/ESP8266Ping
+#Note that this is a port from [ESP8266Ping](https://github.com/dancol90/ESP8266Ping)
 With this library an ESP32Ping can ping a remote machine and know if it's reachable.
 It provide some basic measurements on ping messages (avg response time).
 

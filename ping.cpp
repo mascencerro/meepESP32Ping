@@ -94,22 +94,33 @@ static float var_time = 0;
 
 #define PING_ID 0xAFAF
 
-#ifndef PING_DEFAULT_COUNT
-#define PING_DEFAULT_COUNT    10
-#endif
-#ifndef PING_DEFAULT_INTERVAL
-#define PING_DEFAULT_INTERVAL  1
-#endif
-#ifndef PING_DEFAULT_SIZE
-#define PING_DEFAULT_SIZE     32
-#endif
-#ifndef PING_DEFAULT_TIMEOUT
-#define PING_DEFAULT_TIMEOUT   1
-#endif
-
 #ifndef TIME_UNIT_MILLIS
 #define TIME_UNIT_SECONDS
 #endif
+
+#ifndef PING_DEFAULT_COUNT
+#define PING_DEFAULT_COUNT    10
+#endif
+
+#ifndef PING_DEFAULT_INTERVAL
+#ifdef TIME_UNIT_MILLIS
+#define PING_DEFAULT_INTERVAL 1000
+#else
+#define PING_DEFAULT_INTERVAL  1
+#endif // #ifdef TIME_UNIT_MILLIS
+#endif // #ifndef PING_DEFAULT_INTERVAL
+
+#ifndef PING_DEFAULT_SIZE
+#define PING_DEFAULT_SIZE     32
+#endif
+
+#ifndef PING_DEFAULT_TIMEOUT
+#ifdef TIME_UNIT_MILLIS
+#define PING_DEFAULT_TIMEOUT   1000
+#else
+#define PING_DEFAULT_TIMEOUT 1
+#endif // #ifdef TIME_UNIT_MILLIS
+#endif // #ifndef PING_DEFAULT_TIMEOUT
 
 /*
 * Helper functions
@@ -300,9 +311,11 @@ bool ping_start(IPAddress adr, int count=0, int interval=0, int size=0, int time
 #ifdef TIME_UNIT_SECONDS
     tout.tv_sec = timeout;
     tout.tv_usec = 0;
-#elifdef TIME_UNIT_MILLIS
+#else
+#ifdef TIME_UNIT_MILLIS
     tout.tv_sec = 0;
-    tout.tv_usec = timeout
+    tout.tv_usec = timeout * 1000; // microseconds
+#endif
 #endif
     if (setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &tout, sizeof(tout)) < 0) {
         closesocket(s);
@@ -336,9 +349,11 @@ bool ping_start(IPAddress adr, int count=0, int interval=0, int size=0, int time
         }
         if(ping_seq_num < count){
 #ifdef TIME_UNIT_SECONDS
-            delay(interval*1000L);
-#elifdef TIME_UNIT_MILLIS
+            delay(interval * 1000L);
+#else
+#ifdef TIME_UNIT_MILLIS
             delay(interval);
+#endif
 #endif
         }
     }

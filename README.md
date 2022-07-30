@@ -1,7 +1,7 @@
 # ESP32Ping
 Let the ESP32Ping ping a remote machine.
 
-#Note that this is a port from https://github.com/dancol90/ESP8266Ping
+#Note that this is a port from [ESP8266Ping](https://github.com/dancol90/ESP8266Ping)
 With this library an ESP32Ping can ping a remote machine and know if it's reachable.
 It provide some basic measurements on ping messages (avg response time).
 
@@ -39,6 +39,18 @@ After `Ping.ping()` has been called, the average response time (in milliseconds)
 ```Arduino
 float avg_time_ms = Ping.averageTime();
 ```
+
+### Build Flags
+`PING_DEFAULT_COUNT` - Number of times to ping resource (default: 10)
+
+`TIME_UNIT_MILLIS` - Set this flag to have timeouts and intervals in milliseconds instead of seconds
+
+`PING_DEFAULT_TIMEOUT` - Time after which ping request times out (default: 1 second)
+
+`PING_DEFAULT_INTERVAL` - Time between ping requests (default: 1 second)
+
+`PING_DEFAULT_SIZE` - Byte size of the ping request (default: 32 bytes)
+
 ## Fixed in 1.3
 Memory leak bug ( https://github.com/marian-craciunescu/ESP32Ping/issues/4 )
 ## Fixed in 1.4
